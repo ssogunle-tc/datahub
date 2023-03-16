@@ -16,10 +16,11 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y twine 
+          sudo apt-get install -y twine  
+          python3 pip install avro
           ./metadata-ingestion/scripts/install_deps.sh
           ./metadata-ingestion/scripts/codegen.sh
-          ls metadata-ingestion/src/datahub
+          ls metadata-ingestion/src/datahub 
     
       - name: Package Metadata Ingestion.  
         run: |
