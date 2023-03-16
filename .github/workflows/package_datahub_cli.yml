@@ -24,4 +24,4 @@ jobs:
           cd metadata-ingestion 
           rm -rf dist/ 
           python setup.py sdist 
-          twine upload -u ssogunle -p  ${{ secrets.PYPI_PASSWD }}
+          twine upload dist/* -u ssogunle -p  ${{ secrets.PYPI_PASSWD }}
