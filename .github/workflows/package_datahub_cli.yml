@@ -13,6 +13,12 @@ jobs:
         with:
           python-version: 3.7
           cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          apt-get update
+          apt-get install -y twine
+
       - name: Package Metadata Ingestion.  
         run: |
           cd metadata-ingestion 
