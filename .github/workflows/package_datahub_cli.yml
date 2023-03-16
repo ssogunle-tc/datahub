@@ -17,7 +17,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y twine  
-          python3 -m pip install avro
+          python3 -m pip install avro pydantic click yaml avrogen
           ./metadata-ingestion/scripts/install_deps.sh
           ./metadata-ingestion/scripts/codegen.sh
           ls metadata-ingestion/src/datahub 
