@@ -1,0 +1,20 @@
+name: Generate new Datahub-CLI package. 
+
+on:
+  workflow_dispatch:
+
+
+jobs:
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v3 
+    - uses: actions/setup-python@v4
+      with:
+        python-version: 3.7
+        cache: 'pip'
+    - name: Package Metadata Ingestion.  
+      run: |
+        cd metadata-ingestion 
+        rm -rf dist/ 
+        python setup.py sdist 
+        twine upload -u ssogunle -p  ${{ secrets.PYPI_PASSWD }}
