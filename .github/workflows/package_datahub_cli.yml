@@ -32,9 +32,9 @@ jobs:
           echo Done! Now listing ingestion src-code subdirs
           ls src/datahub 
     
-#      - name: (Re)package ingestion code.  
-#        run: |
-#          cd metadata-ingestion 
-#          rm -rf dist/ 
-#          python setup.py sdist 
-#          twine upload dist/* -u ssogunle -p  ${{ secrets.PYPI_PASSWD }}
+      - name: (Re)package ingestion code.  
+        run: |
+          cd metadata-ingestion 
+          rm -rf dist/ 
+          python setup.py sdist 
+          twine upload dist/* -u ssogunle -p  ${{ secrets.PYPI_PASSWD }}
