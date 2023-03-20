@@ -24,6 +24,13 @@ jobs:
         run: | 
           ./gradlew 
 
+      - name: List dir contents
+        run: | 
+          ls 
+          ls metadata-ingestion/ 
+          ls metadata-events/mxe-schemas/ 
+          ls metadata-models/
+
       - name: Auto Generate code for ingestion code dir
         run: |
           ./metadata-ingestion/scripts/codegen.sh
