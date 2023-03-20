@@ -18,6 +18,7 @@ jobs:
           sudo apt-get install -y twine  
           python3 -m pip install pydantic click pyyaml avro==1.10.2 avro-gen3==0.7.8
           ./metadata-ingestion/scripts/install_deps.sh 
+          
       - name: Build metadata-events:mxe-schemas 
         run: | 
           ./gradlew :metadata-events:mxe-schemas:build
