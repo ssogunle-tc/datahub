@@ -20,18 +20,15 @@ jobs:
           python3 -m pip install pydantic click pyyaml avro==1.10.2 avro-gen3==0.7.8
           ./metadata-ingestion/scripts/install_deps.sh 
 
- #     - name: Build datahub
- #       run: | 
- #         ./gradlew 
-
       - name: Build metadata-events:mxe-schemas 
         run: | 
           ./gradlew :metadata-events:mxe-schemas:build
           
-      - name: Auto Generate code for ingestion code dir
+      - name: Auto-generate files for ingestion code dir
         run: |
+          echo "Now generating files..."
           ./metadata-ingestion/scripts/codegen.sh
-          echo List ingestion src-code subdirs
+          echo Done! Now listing ingestion src-code subdirs
           ls metadata-ingestion/src/datahub 
     
       - name: (Re)package ingestion code.  
