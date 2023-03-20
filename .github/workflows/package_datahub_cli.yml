@@ -26,14 +26,15 @@ jobs:
           
       - name: Auto-generate files for ingestion code dir
         run: |
+          cd metadata-ingestion
           echo "Now generating files..."
-          ./metadata-ingestion/scripts/codegen.sh
+          ./scripts/codegen.sh
           echo Done! Now listing ingestion src-code subdirs
-          ls metadata-ingestion/src/datahub 
+          ls src/datahub 
     
-      - name: (Re)package ingestion code.  
-        run: |
-          cd metadata-ingestion 
-          rm -rf dist/ 
-          python setup.py sdist 
-          twine upload dist/* -u ssogunle -p  ${{ secrets.PYPI_PASSWD }}
+#      - name: (Re)package ingestion code.  
+#        run: |
+#          cd metadata-ingestion 
+#          rm -rf dist/ 
+#          python setup.py sdist 
+#          twine upload dist/* -u ssogunle -p  ${{ secrets.PYPI_PASSWD }}
