@@ -4,7 +4,7 @@ set -euo pipefail
 OUTDIR=./src/datahub/metadata
 
 # Note: this assumes that datahub has already been built with `./gradlew build`.
-DATAHUB_ROOT=..
+DATAHUB_ROOT=.
 SCHEMAS_ROOT="$DATAHUB_ROOT/metadata-events/mxe-schemas/src/renamed/avro/com/linkedin"
 ENTITY_REGISTRY="$DATAHUB_ROOT/metadata-models/src/main/resources/entity-registry.yml"
 
