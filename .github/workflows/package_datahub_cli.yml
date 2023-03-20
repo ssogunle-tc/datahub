@@ -22,16 +22,11 @@ jobs:
 
       - name: Build metadata-events:mxe-schemas 
         run: | 
-          ./gradlew :metadata-events:mxe-schemas:build
+          ./gradlew :metadata-events:mxe-schemas:build 
 
-      - name: Auto Generate code for ingestion code dir
+      - name: Check  dirs 
         run: |
-          ./metadata-ingestion/scripts/codegen.sh
-          ls metadata-ingestion/src/datahub 
-    
-      - name: (Re)package ingestion code.  
-        run: |
-          cd metadata-ingestion 
-          rm -rf dist/ 
-          python setup.py sdist 
-          twine upload dist/* -u ssogunle -p  ${{ secrets.PYPI_PASSWD }}
+          ls 
+          pwd
+          ls ~
+
