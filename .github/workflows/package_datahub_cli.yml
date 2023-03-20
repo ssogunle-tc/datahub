@@ -24,17 +24,10 @@ jobs:
         run: | 
           ./gradlew 
 
-      - name: List dir contents
+      - name: Build metadata-events:mxe-schemas 
         run: | 
-          echo Try ls
-          ls 
-          echo try metadata-ingestion
-          ls metadata-ingestion/ 
-          echo try mxe-schemas
-          ls metadata-events/mxe-schemas/
-          echo try metadata-models 
-          ls metadata-models/
-
+          ./gradlew :metadata-events:mxe-schemas:build
+          
       - name: Auto Generate code for ingestion code dir
         run: |
           ./metadata-ingestion/scripts/codegen.sh
