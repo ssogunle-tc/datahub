@@ -140,7 +140,7 @@ def dataplatform2instance_func(
     migration_report = MigrationReport(run_id, dry_run, keep)
     system_metadata = SystemMetadataClass(runId=run_id)
     
-    rest_emitter = None # add defsult value
+    rest_emitter = None # add default
     
     if not dry_run:
         rest_emitter = DatahubRestEmitter(
