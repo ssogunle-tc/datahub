@@ -94,6 +94,10 @@ class KafkaSourceConfig(StatefulIngestionConfigBase, DatasetSourceConfigBase):
         default=False,
         description="Disables warnings reported for non-AVRO/Protobuf value or key schemas if set.",
     )
+    enable_topic_record_naming_strategy: str = pydantic.Field(
+        default=False,
+        description="Enables the explicit utilization of the TopicRecordNameStrategy for Schema Registry subjects. For more information, visit: https://docs.confluent.io/platform/current/schema-registry/serdes-develop/index.html#handling-differences-between-preregistered-and-client-derived-schemas:~:text=io.confluent.kafka.serializers.subject.TopicRecordNameStrategy",
+    )
 
     @pydantic.root_validator
     def validate_platform_instance(cls: "KafkaSourceConfig", values: Dict) -> Dict:
