@@ -18,11 +18,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y twine  
           python3 -m pip install avro-python3 pydantic click pyyaml avro-gen
-          ./metadata-ingestion/scripts/install_deps.sh
+          ./metadata-ingestion/scripts/install_deps.sh 
+
+      - name: Build metadata-events:mxe-schemas 
+          ./gradlew :metadata-events:mxe-schemas:build
+
+      - name: Auto Generate code for ingestion code dir
           ./metadata-ingestion/scripts/codegen.sh
           ls metadata-ingestion/src/datahub 
     
-      - name: Package Metadata Ingestion.  
+      - name: (Re)package ingestion code.  
         run: |
           cd metadata-ingestion 
           rm -rf dist/ 
