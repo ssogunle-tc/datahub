@@ -27,7 +27,7 @@ jobs:
       - name: Auto-generate files for ingestion code dir
         run: |
           cd metadata-ingestion
-          echo "Now generating files..."
+          echo Now generating files...
           ./scripts/codegen.sh
           echo Done! Now listing ingestion src-code subdirs
           ls src/datahub 
