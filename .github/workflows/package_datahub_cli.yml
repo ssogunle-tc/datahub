@@ -17,7 +17,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y twine  
-          python3 -m pip install avro avro-python3 pydantic click pyyaml avro-gen
+          python3 -m pip install avro==1.10.2 pydantic click pyyaml avro-gen3==0.7.8
           ./metadata-ingestion/scripts/install_deps.sh 
 
       - name: Build metadata-events:mxe-schemas 
