@@ -22,7 +22,7 @@ jobs:
 
       - name: Build datahub
         run: | 
-          ./gradlew  
+          ./gradlew 
 
       - name: Auto Generate code for ingestion code dir
         run: |
