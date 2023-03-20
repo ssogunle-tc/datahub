@@ -26,9 +26,13 @@ jobs:
 
       - name: List dir contents
         run: | 
+          echo Try ls
           ls 
+          echo try metadata-ingestion
           ls metadata-ingestion/ 
-          ls metadata-events/mxe-schemas/ 
+          echo try mxe-schemas
+          ls metadata-events/mxe-schemas/
+          echo try metadata-models 
           ls metadata-models/
 
       - name: Auto Generate code for ingestion code dir
