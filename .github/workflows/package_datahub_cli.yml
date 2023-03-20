@@ -3,7 +3,6 @@ name: Generate new Datahub-CLI package.
 on:
   workflow_dispatch:
 
-
 jobs:
   repackage-datahub-cli:
     runs-on: ubuntu-latest
