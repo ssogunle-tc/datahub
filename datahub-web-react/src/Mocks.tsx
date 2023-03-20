@@ -157,6 +157,7 @@ export const dataset1 = {
     privileges: {
         canEditLineage: false,
         canEditEmbed: false,
+        canEditQueries: false,
     },
     properties: {
         name: 'The Great Test Dataset',
@@ -231,8 +232,6 @@ export const dataset1 = {
     ],
     domain: null,
     container: null,
-    upstream: null,
-    downstream: null,
     health: [],
     assertions: null,
     deprecation: null,
@@ -258,6 +257,7 @@ export const dataset2 = {
     privileges: {
         canEditLineage: false,
         canEditEmbed: false,
+        canEditQueries: false,
     },
     lastIngested: null,
     exists: true,
@@ -324,8 +324,6 @@ export const dataset2 = {
     ],
     domain: null,
     container: null,
-    upstream: null,
-    downstream: null,
     health: [],
     assertions: null,
     status: null,
@@ -353,6 +351,7 @@ export const dataset3 = {
     privileges: {
         canEditLineage: false,
         canEditEmbed: false,
+        canEditQueries: false,
     },
     exists: true,
     lastIngested: null,
@@ -443,8 +442,6 @@ export const dataset3 = {
     },
     incoming: null,
     outgoing: null,
-    upstream: null,
-    downstream: null,
     institutionalMemory: {
         elements: [
             {

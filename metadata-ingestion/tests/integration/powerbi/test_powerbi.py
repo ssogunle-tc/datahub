@@ -1,12 +1,21 @@
+import logging
+import sys
 from typing import Any, Dict
 from unittest import mock
 
+import pytest
 from freezegun import freeze_time
 
 from datahub.ingestion.run.pipeline import Pipeline
 from tests.test_helpers import mce_helpers
 
 FROZEN_TIME = "2022-02-03 07:00:00"
+
+
+def enable_logging():
+    # set logging to console
+    logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+    logging.getLogger().setLevel(logging.DEBUG)
 
 
 def mock_msal_cca(*args, **kwargs):
@@ -35,23 +44,24 @@ def scan_init_response(request, context):
     return w_id_vs_response[workspace_id]
 
 
-def register_mock_api(request_mock):
+def register_mock_api(request_mock: Any, override_data: dict = {}) -> None:
     api_vs_response = {
         "https://api.powerbi.com/v1.0/myorg/groups": {
             "method": "GET",
             "status_code": 200,
             "json": {
+                "@odata.count": 3,
                 "value": [
                     {
                         "id": "64ED5CAD-7C10-4684-8180-826122881108",
                         "isReadOnly": True,
-                        "name": "Workspace 1",
+                        "name": "demo-workspace",
                         "type": "Workspace",
                     },
                     {
                         "id": "64ED5CAD-7C22-4684-8180-826122881108",
                         "isReadOnly": True,
-                        "name": "Workspace 2",
+                        "name": "second-demo-workspace",
                         "type": "Workspace",
                     },
                     {
@@ -60,7 +70,7 @@ def register_mock_api(request_mock):
                         "name": "Workspace 2",
                         "type": "Workspace",
                     },
-                ]
+                ],
             },
         },
         "https://api.powerbi.com/v1.0/myorg/groups/64ED5CAD-7C10-4684-8180-826122881108/dashboards": {
@@ -72,6 +82,7 @@ def register_mock_api(request_mock):
                         "id": "7D668CAD-7FFC-4505-9215-655BCA5BEBAE",
                         "isReadOnly": True,
                         "displayName": "test_dashboard",
+                        "description": "Description of test dashboard",
                         "embedUrl": "https://localhost/dashboards/embed/1",
                         "webUrl": "https://localhost/dashboards/web/1",
                     }
@@ -196,6 +207,7 @@ def register_mock_api(request_mock):
             "json": {
                 "id": "05169CD2-E713-41E6-9600-1D8066D95445",
                 "name": "library-dataset",
+                "description": "Library dataset description",
                 "webUrl": "http://localhost/groups/64ED5CAD-7C10-4684-8180-826122881108/datasets/05169CD2-E713-41E6-9600-1D8066D95445",
             },
         },
@@ -205,6 +217,7 @@ def register_mock_api(request_mock):
             "json": {
                 "id": "05169CD2-E713-41E6-96AA-1D8066D95445",
                 "name": "library-dataset",
+                "description": "Library dataset description",
                 "webUrl": "http://localhost/groups/64ED5CAD-7C22-4684-8180-826122881108/datasets/05169CD2-E713-41E6-96AA-1D8066D95445",
             },
         },
@@ -214,6 +227,7 @@ def register_mock_api(request_mock):
             "json": {
                 "id": "ba0130a1-5b03-40de-9535-b34e778ea6ed",
                 "name": "hr_pbi_test",
+                "description": "hr pbi test description",
                 "webUrl": "http://localhost/groups/64ED5CAD-7C10-4684-8180-826122881108/datasets/ba0130a1-5b03-40de-9535-b34e778ea6ed",
             },
         },
@@ -309,6 +323,19 @@ def register_mock_api(request_mock):
                                         "source": [
                                             {
                                                 "expression": 'let\n    Source = Value.NativeQuery(Snowflake.Databases("bu20658.ap-southeast-2.snowflakecomputing.com","operations_analytics_warehouse_prod",[Role="OPERATIONS_ANALYTICS_MEMBER"]){[Name="OPERATIONS_ANALYTICS"]}[Data], "SELECT#(lf)concat((UPPER(REPLACE(SELLER,\'-\',\'\'))), MONTHID) as AGENT_KEY,#(lf)concat((UPPER(REPLACE(CLIENT_DIRECTOR,\'-\',\'\'))), MONTHID) as CD_AGENT_KEY,#(lf) *#(lf)FROM#(lf)OPERATIONS_ANALYTICS.TRANSFORMED_PROD.V_APS_SME_UNITS_V4", null, [EnableFolding=true]),\n    #"Added Conditional Column" = Table.AddColumn(Source, "SME Units ENT", each if [DEAL_TYPE] = "SME Unit" then [UNIT] else 0),\n    #"Added Conditional Column1" = Table.AddColumn(#"Added Conditional Column", "Banklink Units", each if [DEAL_TYPE] = "Banklink" then [UNIT] else 0),\n    #"Removed Columns" = Table.RemoveColumns(#"Added Conditional Column1",{"Banklink Units"}),\n    #"Added Custom" = Table.AddColumn(#"Removed Columns", "Banklink Units", each if [DEAL_TYPE] = "Banklink" and [SALES_TYPE] = "3 - Upsell"\nthen [UNIT]\n\nelse if [SALES_TYPE] = "Adjusted BL Migration"\nthen [UNIT]\n\nelse 0),\n    #"Added Custom1" = Table.AddColumn(#"Added Custom", "SME Units in $ (*$361)", each if [DEAL_TYPE] = "SME Unit" \nand [SALES_TYPE] <> "4 - Renewal"\n    then [UNIT] * 361\nelse 0),\n    #"Added Custom2" = Table.AddColumn(#"Added Custom1", "Banklink in $ (*$148)", each [Banklink Units] * 148)\nin\n    #"Added Custom2"',
+                                            }
+                                        ],
+                                        "datasourceUsages": [
+                                            {
+                                                "datasourceInstanceId": "DCE90B40-84D6-467A-9A5C-648E830E72D3",
+                                            }
+                                        ],
+                                    },
+                                    {
+                                        "name": "big-query-with-parameter",
+                                        "source": [
+                                            {
+                                                "expression": 'let\n Source = GoogleBigQuery.Database([BillingProject = #"Parameter - Source"]),\n#"gcp-project" = Source{[Name=#"Parameter - Source"]}[Data],\nuniversal_Schema = #"gcp-project"{[Name="universal",Kind="Schema"]}[Data],\nD_WH_DATE_Table = universal_Schema{[Name="D_WH_DATE",Kind="Table"]}[Data],\n#"Filtered Rows" = Table.SelectRows(D_WH_DATE_Table, each [D_DATE] > #datetime(2019, 9, 10, 0, 0, 0)),\n#"Filtered Rows1" = Table.SelectRows(#"Filtered Rows", each DateTime.IsInPreviousNHours([D_DATE], 87600))\n in \n#"Filtered Rows1"',
                                             }
                                         ],
                                         "datasourceUsages": [
@@ -502,7 +529,29 @@ def register_mock_api(request_mock):
                 ]
             },
         },
+        "https://api.powerbi.com/v1.0/myorg/groups/64ED5CAD-7C10-4684-8180-826122881108/datasets/05169CD2-E713-41E6-9600-1D8066D95445/parameters": {
+            "method": "GET",
+            "status_code": 200,
+            "json": {
+                "value": [
+                    {
+                        "name": "Parameter - Source",
+                        "type": "Text",
+                        "isRequired": True,
+                        "currentValue": "my-test-project",
+                    },
+                    {
+                        "name": "My bq project",
+                        "type": "Text",
+                        "isRequired": True,
+                        "currentValue": "gcp_billing",
+                    },
+                ]
+            },
+        },
     }
+
+    api_vs_response.update(override_data)
 
     for url in api_vs_response.keys():
         request_mock.register_uri(
@@ -521,6 +570,7 @@ def default_source_config():
         "workspace_id": "64ED5CAD-7C10-4684-8180-826122881108",
         "extract_lineage": False,
         "extract_reports": False,
+        "extract_ownership": True,
         "convert_lineage_urns_to_lowercase": False,
         "workspace_id_pattern": {"allow": ["64ED5CAD-7C10-4684-8180-826122881108"]},
         "dataset_type_mapping": {
@@ -534,7 +584,9 @@ def default_source_config():
 
 @freeze_time(FROZEN_TIME)
 @mock.patch("msal.ConfidentialClientApplication", side_effect=mock_msal_cca)
+@pytest.mark.integration
 def test_powerbi_ingest(mock_msal, pytestconfig, tmp_path, mock_time, requests_mock):
+    enable_logging()
 
     test_resources_dir = pytestconfig.rootpath / "tests/integration/powerbi"
 
@@ -571,6 +623,7 @@ def test_powerbi_ingest(mock_msal, pytestconfig, tmp_path, mock_time, requests_m
 
 @freeze_time(FROZEN_TIME)
 @mock.patch("msal.ConfidentialClientApplication", side_effect=mock_msal_cca)
+@pytest.mark.integration
 def test_powerbi_ingest_urn_lower_case(
     mock_msal, pytestconfig, tmp_path, mock_time, requests_mock
 ):
@@ -612,6 +665,7 @@ def test_powerbi_ingest_urn_lower_case(
 
 @freeze_time(FROZEN_TIME)
 @mock.patch("msal.ConfidentialClientApplication", side_effect=mock_msal_cca)
+@pytest.mark.integration
 def test_override_ownership(
     mock_msal, pytestconfig, tmp_path, mock_time, requests_mock
 ):
@@ -652,6 +706,7 @@ def test_override_ownership(
 
 @freeze_time(FROZEN_TIME)
 @mock.patch("msal.ConfidentialClientApplication", side_effect=mock_msal_cca)
+@pytest.mark.integration
 def test_scan_all_workspaces(
     mock_msal, pytestconfig, tmp_path, mock_time, requests_mock
 ):
@@ -697,7 +752,9 @@ def test_scan_all_workspaces(
 
 @freeze_time(FROZEN_TIME)
 @mock.patch("msal.ConfidentialClientApplication", side_effect=mock_msal_cca)
+@pytest.mark.integration
 def test_extract_reports(mock_msal, pytestconfig, tmp_path, mock_time, requests_mock):
+    enable_logging()
 
     test_resources_dir = pytestconfig.rootpath / "tests/integration/powerbi"
 
@@ -735,7 +792,9 @@ def test_extract_reports(mock_msal, pytestconfig, tmp_path, mock_time, requests_
 
 @freeze_time(FROZEN_TIME)
 @mock.patch("msal.ConfidentialClientApplication", side_effect=mock_msal_cca)
+@pytest.mark.integration
 def test_extract_lineage(mock_msal, pytestconfig, tmp_path, mock_time, requests_mock):
+    enable_logging()
 
     test_resources_dir = pytestconfig.rootpath / "tests/integration/powerbi"
 
@@ -781,6 +840,7 @@ def test_extract_lineage(mock_msal, pytestconfig, tmp_path, mock_time, requests_
 
 @freeze_time(FROZEN_TIME)
 @mock.patch("msal.ConfidentialClientApplication", side_effect=mock_msal_cca)
+@pytest.mark.integration
 def test_extract_endorsements(
     mock_msal, pytestconfig, tmp_path, mock_time, requests_mock
 ):
@@ -821,9 +881,70 @@ def test_extract_endorsements(
 
 @freeze_time(FROZEN_TIME)
 @mock.patch("msal.ConfidentialClientApplication", side_effect=mock_msal_cca)
+@pytest.mark.integration
+def test_admin_access_is_not_allowed(
+    mock_msal, pytestconfig, tmp_path, mock_time, requests_mock
+):
+    enable_logging()
+
+    test_resources_dir = pytestconfig.rootpath / "tests/integration/powerbi"
+
+    register_mock_api(
+        request_mock=requests_mock,
+        override_data={
+            "https://api.powerbi.com/v1.0/myorg/admin/workspaces/getInfo": {
+                "method": "POST",
+                "status_code": 403,
+                "json": {},
+            },
+        },
+    )
+
+    pipeline = Pipeline.create(
+        {
+            "run_id": "powerbi-admin-api-disabled-test",
+            "source": {
+                "type": "powerbi",
+                "config": {
+                    **default_source_config(),
+                    "extract_lineage": True,
+                    "dataset_type_mapping": {
+                        "PostgreSql": {"platform_instance": "operational_instance"},
+                        "Oracle": {
+                            "platform_instance": "high_performance_production_unit"
+                        },
+                        "Sql": {"platform_instance": "reporting-db"},
+                        "Snowflake": {"platform_instance": "sn-2"},
+                    },
+                },
+            },
+            "sink": {
+                "type": "file",
+                "config": {
+                    "filename": f"{tmp_path}/golden_test_admin_access_not_allowed_mces.json",
+                },
+            },
+        }
+    )
+
+    pipeline.run()
+    pipeline.raise_from_status()
+    golden_file = "golden_test_admin_access_not_allowed.json"
+
+    mce_helpers.check_golden_file(
+        pytestconfig,
+        output_path=f"{tmp_path}/golden_test_admin_access_not_allowed_mces.json",
+        golden_path=f"{test_resources_dir}/{golden_file}",
+    )
+
+
+@freeze_time(FROZEN_TIME)
+@mock.patch("msal.ConfidentialClientApplication", side_effect=mock_msal_cca)
 def test_workspace_container(
     mock_msal, pytestconfig, tmp_path, mock_time, requests_mock
 ):
+    enable_logging()
+
     test_resources_dir = pytestconfig.rootpath / "tests/integration/powerbi"
 
     register_mock_api(request_mock=requests_mock)
