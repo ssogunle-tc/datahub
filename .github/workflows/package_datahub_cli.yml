@@ -21,9 +21,11 @@ jobs:
           ./metadata-ingestion/scripts/install_deps.sh 
 
       - name: Build metadata-events:mxe-schemas 
+        run: | 
           ./gradlew :metadata-events:mxe-schemas:build
 
       - name: Auto Generate code for ingestion code dir
+        run: |
           ./metadata-ingestion/scripts/codegen.sh
           ls metadata-ingestion/src/datahub 
     
