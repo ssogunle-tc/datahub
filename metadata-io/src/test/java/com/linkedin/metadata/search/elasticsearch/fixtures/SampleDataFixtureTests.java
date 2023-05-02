@@ -119,8 +119,8 @@ public class SampleDataFixtureTests extends AbstractTestNGSpringContextTests {
             for (SearchableFieldSpec fieldSpec : entitySpec.getSearchableFieldSpecs()) {
                 SearchFieldConfig test = SearchFieldConfig.detectSubFieldType(fieldSpec);
 
-                if (!test.getFieldName().contains(".")) {
-                    Map<String, Object> actual = mappings.get(test.getFieldName());
+                if (!test.fieldName().contains(".")) {
+                    Map<String, Object> actual = mappings.get(test.fieldName());
 
                     final String expectedAnalyzer;
                     if (actual.get("search_analyzer") != null) {
@@ -131,36 +131,36 @@ public class SampleDataFixtureTests extends AbstractTestNGSpringContextTests {
                         expectedAnalyzer = "keyword";
                     }
 
-                    assertEquals(test.getAnalyzer(), expectedAnalyzer,
+                    assertEquals(test.analyzer(), expectedAnalyzer,
                             String.format("Expected search analyzer to match for entity: `%s`field: `%s`",
-                                    entitySpec.getName(), test.getFieldName()));
+                                    entitySpec.getName(), test.fieldName()));
 
                     if (test.hasDelimitedSubfield()) {
                         assertTrue(((Map<String, Map<String, String>>) actual.get("fields")).containsKey("delimited"),
                                 String.format("Expected entity: `%s` field to have .delimited subfield: `%s`",
-                                        entitySpec.getName(), test.getFieldName()));
+                                        entitySpec.getName(), test.fieldName()));
                     } else {
                         boolean nosubfield = !actual.containsKey("fields")
                                 || !((Map<String, Map<String, String>>) actual.get("fields")).containsKey("delimited");
                         assertTrue(nosubfield, String.format("Expected entity: `%s` field to NOT have .delimited subfield: `%s`",
-                                entitySpec.getName(), test.getFieldName()));
+                                entitySpec.getName(), test.fieldName()));
                     }
                     if (test.hasKeywordSubfield()) {
                         assertTrue(((Map<String, Map<String, String>>) actual.get("fields")).containsKey("keyword"),
                                 String.format("Expected entity: `%s` field to have .keyword subfield: `%s`",
-                                        entitySpec.getName(), test.getFieldName()));
+                                        entitySpec.getName(), test.fieldName()));
                     } else {
                         boolean nosubfield = !actual.containsKey("fields")
                                 || !((Map<String, Map<String, String>>) actual.get("fields")).containsKey("keyword");
                         assertTrue(nosubfield, String.format("Expected entity: `%s` field to NOT have .keyword subfield: `%s`",
-                                entitySpec.getName(), test.getFieldName()));
+                                entitySpec.getName(), test.fieldName()));
                     }
                 } else {
                     // this is a subfield therefore cannot have a subfield
                     assertFalse(test.hasKeywordSubfield());
                     assertFalse(test.hasDelimitedSubfield());
 
-                    String[] fieldAndSubfield = test.getFieldName().split("[.]", 2);
+                    String[] fieldAndSubfield = test.fieldName().split("[.]", 2);
 
                     Map<String, Object> actualParent = mappings.get(fieldAndSubfield[0]);
                     Map<String, Object> actualSubfield = ((Map<String, Map<String, Object>>) actualParent.get("fields")).get(fieldAndSubfield[0]);
@@ -168,11 +168,22 @@ public class SampleDataFixtureTests extends AbstractTestNGSpringContextTests {
                     String expectedAnalyzer = actualSubfield.get("search_analyzer") != null ? (String) actualSubfield.get("search_analyzer")
                             : "keyword";
 
-                    assertEquals(test.getAnalyzer(), expectedAnalyzer,
-                            String.format("Expected search analyzer to match for field `%s`", test.getFieldName()));
+                    assertEquals(test.analyzer(), expectedAnalyzer,
+                            String.format("Expected search analyzer to match for field `%s`", test.fieldName()));
                 }
             }
         }
+    }
+
+    @Test
+    public void testDatasetHasTags() throws IOException {
+        GetMappingsRequest req = new GetMappingsRequest()
+                .indices("smpldat_datasetindex_v2");
+        GetMappingsResponse resp = _searchClient.indices().getMapping(req, RequestOptions.DEFAULT);
+        Map<String, Map<String, String>> mappings = (Map<String, Map<String, String>>) resp.mappings()
+                .get("smpldat_datasetindex_v2").sourceAsMap().get("properties");
+        assertTrue(mappings.containsKey("hasTags"));
+        assertEquals(mappings.get("hasTags"), Map.of("type", "boolean"));
     }
 
     @Test
@@ -184,7 +195,7 @@ public class SampleDataFixtureTests extends AbstractTestNGSpringContextTests {
         final SearchResult result = search(searchService, "test");
 
         Map<String, Integer> expectedTypes = Map.of(
-                "dataset", 7,
+                "dataset", 13,
                 "chart", 0,
                 "container", 1,
                 "dashboard", 0,
@@ -1119,6 +1130,54 @@ public class SampleDataFixtureTests extends AbstractTestNGSpringContextTests {
         assertEquals(result.getEntities().get(0).getEntity().toString(),
                 "urn:li:dataset:(urn:li:dataPlatform:dbt,cypress_project.jaffle_shop.customers,PROD)",
                 "Expected exact match and 1st position");
+    }
+
+    // Note: This test can fail if not using .keyword subfields (check for possible query builder regression)
+    @Test
+    public void testPrefixVsExactCaseSensitivity() {
+        List<String> insensitiveExactMatches = List.of("testExactMatchCase", "testexactmatchcase", "TESTEXACTMATCHCASE");
+        for (String query : insensitiveExactMatches) {
+            SearchResult result = search(searchService, query);
+
+            assertTrue(result.hasEntities() && !result.getEntities().isEmpty(),
+                    String.format("%s - Expected search results", query));
+            assertTrue(result.getEntities().stream().noneMatch(e -> e.getMatchedFields().isEmpty()),
+                    String.format("%s - Expected search results to include matched fields", query));
+
+            assertEquals(result.getEntities().size(), insensitiveExactMatches.size());
+            assertEquals(result.getEntities().get(0).getEntity().toString(),
+                    "urn:li:dataset:(urn:li:dataPlatform:testOnly," + query + ",PROD)",
+                    "Expected exact match as first match with matching case");
+        }
+    }
+
+    @Test
+    public void testColumnExactMatch() {
+        String query = "unit_data";
+        SearchResult result = search(searchService, query);
+        assertTrue(result.hasEntities() && !result.getEntities().isEmpty(),
+            String.format("%s - Expected search results", query));
+        assertTrue(result.getEntities().stream().noneMatch(e -> e.getMatchedFields().isEmpty()),
+            String.format("%s - Expected search results to include matched fields", query));
+
+        assertTrue(result.getEntities().size() > 2,
+            String.format("%s - Expected search results to have at least two results", query));
+        assertEquals(result.getEntities().get(0).getEntity().toString(),
+            "urn:li:dataset:(urn:li:dataPlatform:testOnly," + query + ",PROD)",
+            "Expected table name exact match first");
+
+        query = "special_column_only_present_here_info";
+        result = search(searchService, query);
+        assertTrue(result.hasEntities() && !result.getEntities().isEmpty(),
+            String.format("%s - Expected search results", query));
+        assertTrue(result.getEntities().stream().noneMatch(e -> e.getMatchedFields().isEmpty()),
+            String.format("%s - Expected search results to include matched fields", query));
+
+        assertTrue(result.getEntities().size() > 2,
+            String.format("%s - Expected search results to have at least two results", query));
+        assertEquals(result.getEntities().get(0).getEntity().toString(),
+            "urn:li:dataset:(urn:li:dataPlatform:testOnly," + "important_units" + ",PROD)",
+            "Expected table with column name exact match first");
     }
 
     private Stream<AnalyzeResponse.AnalyzeToken> getTokens(AnalyzeRequest request) throws IOException {

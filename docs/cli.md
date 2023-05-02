@@ -139,37 +139,20 @@ For example the following command gets the ownership aspect from the dataset `ur
 ```shell-session
 $ datahub get --urn "urn:li:dataset:(urn:li:dataPlatform:hive,SampleHiveDataset,PROD)" --aspect ownership
 {
-  "value": {
-    "com.linkedin.metadata.snapshot.DatasetSnapshot": {
-      "aspects": [
-        {
-          "com.linkedin.metadata.key.DatasetKey": {
-            "name": "SampleHiveDataset",
-            "origin": "PROD",
-            "platform": "urn:li:dataPlatform:hive"
-          }
+  "ownership": {
+    "lastModified": {
+      "actor": "urn:li:corpuser:jdoe",
+      "time": 1680210917580
+    },
+    "owners": [
+      {
+        "owner": "urn:li:corpuser:jdoe",
+        "source": {
+          "type": "SERVICE"
         },
-        {
-          "com.linkedin.common.Ownership": {
-            "lastModified": {
-              "actor": "urn:li:corpuser:jdoe",
-              "time": 1581407189000
-            },
-            "owners": [
-              {
-                "owner": "urn:li:corpuser:jdoe",
-                "type": "DATAOWNER"
-              },
-              {
-                "owner": "urn:li:corpuser:datahub",
-                "type": "DATAOWNER"
-              }
-            ]
-          }
-        }
-      ],
-      "urn": "urn:li:dataset:(urn:li:dataPlatform:hive,SampleHiveDataset,PROD)"
-    }
+        "type": "NONE"
+      }
+    ]
   }
 }
 ```
@@ -296,6 +279,55 @@ Details:
 New Entities Created: {'urn:li:dataset:(urn:li:dataPlatform:hive,warehouse.SampleHiveDataset,PROD)', 'urn:li:dataset:(urn:li:dataPlatform:hive,warehouse.fct_users_deleted,PROD)', 'urn:li:dataset:(urn:li:dataPlatform:hive,warehouse.logging_events,PROD)', 'urn:li:dataset:(urn:li:dataPlatform:hive,warehouse.fct_users_created,PROD)'}
 External Entities Affected: None
 Old Entities Migrated = {'urn:li:dataset:(urn:li:dataPlatform:hive,logging_events,PROD)', 'urn:li:dataset:(urn:li:dataPlatform:hive,SampleHiveDataset,PROD)', 'urn:li:dataset:(urn:li:dataPlatform:hive,fct_users_deleted,PROD)', 'urn:li:dataset:(urn:li:dataPlatform:hive,fct_users_created,PROD)'}
+```
+### user
+The `user` command allows you to interact with the User entity. 
+It currently supports the `upsert` operation, which can be used to create a new user or update an existing one. 
+For detailed information, please refer to [Creating Users and Groups with Datahub CLI](/docs/api/tutorials/modifying-dataset-owners.md#upsert-users).
+
+```shell
+datahub user upsert -f users.yaml
+```
+
+An example of `users.yaml` would look like the following. You can refer to the [bar.user.dhub.yaml](https://github.com/datahub-project/datahub/blob/master/metadata-ingestion/examples/cli_usage/user/bar.user.dhub.yaml) file for the complete code.
+```yaml
+- id: bar@acryl.io
+  first_name: The
+  last_name: Bar
+  email: bar@acryl.io
+  slack: "@the_bar_raiser"
+  description: "I like raising the bar higher"
+  groups:
+    - foogroup@acryl.io
+- id: datahub
+  slack: "@datahubproject"
+  phone: "1-800-GOT-META"
+  description: "The DataHub Project"
+  picture_link: "https://raw.githubusercontent.com/datahub-project/datahub/master/datahub-web-react/src/images/datahub-logo-color-stable.svg"
+```
+
+
+### group
+The `group` command allows you to interact with the Group entity.
+It currently supports  the `upsert` operation, which can be used to create a new group or update an existing one with embedded Users. 
+For more information, please refer to [Creating Users and Groups with Datahub CLI](/docs/api/tutorials/modifying-dataset-owners.md#upsert-users).
+
+```shell
+datahub group upsert -f group.yaml
+```
+
+An example of `group.yaml` would look like the following. You can refer to the [foo.group.dhub.yaml](https://github.com/datahub-project/datahub/blob/master/metadata-ingestion/examples/cli_usage/group/foo.group.dhub.yaml) file for the complete code.
+
+```yaml
+id: foogroup@acryl.io
+display_name: Foo Group
+admins:
+  - datahub
+members:
+  - bar@acryl.io # refer to a user either by id or by urn
+  - id: joe@acryl.io # inline specification of user
+    slack: "@joe_shmoe"
+    display_name: "Joe's Hub"
 ```
 
 ## Alternate Installation Options

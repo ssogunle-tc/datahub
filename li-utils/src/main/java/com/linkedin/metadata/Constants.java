@@ -16,7 +16,12 @@ public class Constants {
   public static final Long ASPECT_LATEST_VERSION = 0L;
   public static final String UNKNOWN_DATA_PLATFORM = "urn:li:dataPlatform:unknown";
 
+  /**
+   * System Metadata
+   */
   public static final String DEFAULT_RUN_ID = "no-run-id-provided";
+  // Forces indexing for no-ops, enabled for restore indices calls. Only considered in the no-op case
+  public static final String FORCE_INDEXING_KEY = "forceIndexing";
 
   /**
    * Entities
@@ -70,6 +75,7 @@ public class Constants {
   public static final String SUB_TYPES_ASPECT_NAME = "subTypes";
   public static final String DEPRECATION_ASPECT_NAME = "deprecation";
   public static final String OPERATION_ASPECT_NAME = "operation";
+  public static final String OPERATION_EVENT_TIME_FIELD_NAME = "lastUpdatedTimestamp"; // :(
   public static final String SIBLINGS_ASPECT_NAME = "siblings";
   public static final String ORIGIN_ASPECT_NAME = "origin";
   public static final String INPUT_FIELDS_ASPECT_NAME = "inputFields";

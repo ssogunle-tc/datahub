@@ -138,7 +138,8 @@ class KafkaSource(StatefulIngestionSourceBase):
         try:
             schema_registry_class: Type = import_path(config.schema_registry_class)
             return schema_registry_class.create(config, report)
-        except (ImportError, AttributeError):
+        except Exception as e:
+            logger.debug(e, exc_info=e)
             raise ImportError(config.schema_registry_class)
 
     def __init__(self, config: KafkaSourceConfig, ctx: PipelineContext):
@@ -186,9 +187,6 @@ class KafkaSource(StatefulIngestionSourceBase):
                 "kafka-admin-client",
                 f"Failed to create Kafka Admin Client due to error {e}.",
             )
-
-    def get_platform_instance_id(self) -> Optional[str]:
-        return self.source_config.platform_instance
 
     @classmethod
     def create(cls, config_dict: Dict, ctx: PipelineContext) -> "KafkaSource":
