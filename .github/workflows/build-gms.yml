@@ -1,0 +1,48 @@
+name: Generate custom GMS image
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-gms:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3 
+
+      - name: Install JDK8
+        run: |
+          sudo apt-get update  
+          sudo apt install -y openjdk-8-jdk
+          java -version 
+         
+      - name: Install Gradle
+        run: |
+          sudo apt install snapd -y 
+          sudo snap install gradle --classic
+          gradle --version 
+
+      - name: Install Docker
+        run: |
+          sudo apt-get -y remove docker docker-engine docker.io 
+          sudo apt-get update
+          sudo apt install -y docker.io 
+          sudo snap install docker
+          docker --version
+
+      - name: Build gms 
+        run: |
+          ./gradlew :metadata-service:war:build 
+
+      - name: Build docker image 
+        run: |
+          cd docker/datahub-gms
+          docker build -t ssogunletc/datahub-gms:v0.10.2 . 
+          
+
+      - name: List docker images 
+        run: | 
+          docker images  
+
+      - name: Push image to Dockerhub 
+          docker login -u=" ${{ secrets.DOCKER_USER }}" -p=" ${{ secrets.DOCKER_PASSWORD }}"
+          docker push ssogunletc/datahub-gms:v0.10.2  
