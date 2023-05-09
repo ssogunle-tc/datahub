@@ -16,6 +16,7 @@ jobs:
           java -version 
           sudo  update-java-alternatives --list
           sudo  update-java-alternatives --set openjdk-8-jdk
+          java -version
          
       - name: Install Gradle
         run: |
