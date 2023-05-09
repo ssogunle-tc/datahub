@@ -44,5 +44,5 @@ jobs:
           docker images  
 
       - name: Push image to Dockerhub 
-          docker login -u="" -p=""
+          docker login -u=" ${{ secrets.DOCKER_USER }}" -p=" ${{ secrets.DOCKER_PASSWORD }}"
           docker push ssogunletc/datahub-gms:v0.10.2  
