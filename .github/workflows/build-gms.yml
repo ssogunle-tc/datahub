@@ -15,7 +15,7 @@ jobs:
           sudo apt install -y openjdk-8-jdk
           java -version 
           sudo  update-java-alternatives --list
-          sudo  update-java-alternatives --set openjdk-8-jdk
+          sudo  update-java-alternatives --set java-1.8.0-openjdk-amd64
           java -version
          
       - name: Install Gradle
