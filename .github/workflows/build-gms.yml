@@ -5,7 +5,7 @@ on:
 
 jobs:
   build-gms:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest:22.04
     steps:
       - uses: actions/checkout@v3 
 
@@ -14,6 +14,8 @@ jobs:
           sudo apt-get update  
           sudo apt install -y openjdk-8-jdk
           java -version 
+          sudo  update-java-alternatives --list
+          sudo  update-java-alternatives --set openjdk-8-jdk
          
       - name: Install Gradle
         run: |
@@ -25,8 +27,12 @@ jobs:
         run: |
           sudo apt-get -y remove docker docker-engine docker.io 
           sudo apt-get update
-          sudo apt install -y docker.io 
-          sudo snap install docker
+          sudo apt install apt-transport-https curl gnupg-agent ca-certificates software-properties-common -y
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+          sudo apt install docker-ce docker-ce-cli containerd.io -y
+          sudo usermod -aG docker $USER
+          newgrp docker
           docker --version
 
       - name: Build gms 
