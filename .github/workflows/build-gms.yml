@@ -14,6 +14,6 @@ jobs:
           sudo apt-get -y remove temurin-11-jdk --purge 
           sudo apt-get -y remove temurin-17-jdk --purge
           sudo apt-get -y remove temurin-8-jdk --purge 
-          sudp apt-get -y install openjdk-8-jdk 
+          sudo apt-get -y install openjdk-8-jdk 
           java -version
           echo $JAVA_HOME
