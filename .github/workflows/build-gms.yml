@@ -13,4 +13,4 @@ jobs:
         run: |
           sudo apt-get -y remove temurin-11-jdk --purge 
           sudo apt-get -y remove temurin-17-jdk --purge
-          java --version
+          java -version
