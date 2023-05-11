@@ -11,5 +11,6 @@ jobs:
 
       - name: Install JDK8
         run: |
-          dpkg -l
+          sudo apt-get -y remove temurin-11-jdk --purge 
+          sudo apt-get -y remove temurin-11-jdk --putge
           java --version
