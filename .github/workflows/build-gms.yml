@@ -14,9 +14,7 @@ jobs:
           sudo apt-get -y remove temurin-11-jdk --purge 
           sudo apt-get -y remove temurin-17-jdk --purge
           java -version
-          export JAVA_HOME=/usr/lib/jvm/temurin-8-jdk-amd64
-          export PATH=${PATH}:${JAVA_HOME}/bin
-          echo $JAVA_HOME
+
 
       - name: Install Gradle
         run: |
@@ -38,6 +36,7 @@ jobs:
 
       - name: Build gms 
         run: |
+          export JAVA_HOME=/usr/lib/jvm/temurin-8-jdk-amd64
           ./gradlew :metadata-service:war:build 
 
       - name: Build docker image 
