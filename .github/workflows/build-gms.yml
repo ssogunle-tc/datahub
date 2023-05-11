@@ -13,7 +13,6 @@ jobs:
         run: |
           sudo apt-get -y remove temurin-11-jdk --purge 
           sudo apt-get -y remove temurin-17-jdk --purge
-          sudo apt-get -y remove temurin-8-jdk --purge 
-          sudo apt-get -y install openjdk-8-jdk 
           java -version
+          JAVA_HOME=/usr/lib/jvm/temurin-8-jdk-amd64
           echo $JAVA_HOME
