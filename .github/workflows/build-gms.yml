@@ -13,41 +13,7 @@ jobs:
         run: |
           sudo apt-get -y remove temurin-11-jdk --purge 
           sudo apt-get -y remove temurin-17-jdk --purge
+          sudo apt-get -y remove temurin-8-jdk --purge 
+          sudp apt-get -y install openjdk-8-jdk 
           java -version
-
-      - name: Install Gradle
-        run: |
-          sudo apt install snapd -y 
-          sudo snap install gradle --classic
-          gradle --version 
-
-      - name: Install Docker
-        run: |
-          sudo apt-get -y remove docker docker-engine docker.io 
-          sudo apt-get update
-          sudo apt install apt-transport-https curl gnupg-agent ca-certificates software-properties-common -y
-          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
-          sudo apt install docker-ce docker-ce-cli containerd.io -y
-          sudo usermod -aG docker $USER
-          newgrp docker
-          docker --version
-
-      - name: Build gms 
-        run: |
-          ./gradlew :metadata-service:war:build 
-
-      - name: Build docker image 
-        run: |
-          cd docker/datahub-gms
-          docker build -t ssogunletc/datahub-gms:v0.10.2 . 
-          
-
-      - name: List docker images 
-        run: | 
-          docker images  
-
-      - name: Push image to Dockerhub 
-        run: |
-          docker login -u=" ${{ secrets.DOCKER_USER }}" -p=" ${{ secrets.DOCKER_PASSWORD }}"
-          docker push ssogunletc/datahub-gms:v0.10.2  
+          echo $JAVA_HOME
