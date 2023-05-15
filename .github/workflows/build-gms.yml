@@ -34,7 +34,7 @@ jobs:
         run: |
           java -version
           dir -s
-          docker build  -t ssogunletc/datahub-gms:v0.10.2  -f docker/datahub-gms/Dockerfile
+          docker build  -t ssogunletc/datahub-gms:v0.10.2 docker/datahub-gms/.
 
       - name: List docker images 
         run: | 
@@ -44,3 +44,33 @@ jobs:
         run: |
           docker login -u=" ${{ secrets.DOCKER_USER }}" -p=" ${{ secrets.DOCKER_PASSWORD }}"
           docker push ssogunletc/datahub-gms:v0.10.2  
+
+
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ssogunletc/datahub-gms
+          flavor: latest=true
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+
+      - name: Login to image repository
+        if: github.ref_type == 'tag'
+        uses: docker/login-action@v2
+        with:
+          registry: https://hub.docker.com/
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: docker/datahub-gms/Dockerfile
+          push: ${{ github.ref_type == 'tag' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
