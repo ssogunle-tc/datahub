@@ -3,7 +3,7 @@ ARG APP_ENV=prod
 
 FROM golang:1-alpine3.17 AS binary
 
-#RUN tree /home
+
 
 ENV DOCKERIZE_VERSION v0.6.1
 WORKDIR /go/src/github.com/jwilder
@@ -17,10 +17,6 @@ RUN go install github.com/jwilder/dockerize@$DOCKERIZE_VERSION
 RUN ls /home
 
 FROM alpine:3 AS base
-
-#RUN ls  && ls /home
-
-#ADD /home/runner/work/datahub/ /datahub
 
 # Upgrade Alpine and base packages
 ENV JMX_VERSION=0.18.0
@@ -36,7 +32,7 @@ RUN apk --no-cache --update-cache --available upgrade \
 COPY --from=binary /go/bin/dockerize /usr/local/bin
 
 FROM base as prod-install 
-RUN dir -s && tree /
+
 COPY war.war /datahub/datahub-gms/bin/war.war
 COPY metadata-models/src/main/resources/entity-registry.yml /datahub/datahub-gms/resources/entity-registry.yml
 COPY docker/datahub-gms/start.sh /datahub/datahub-gms/scripts/start.sh
