@@ -53,6 +53,5 @@ jobs:
         with:
           context: .
           file: docker/datahub-gms/Dockerfile
-          push: ${{ github.ref_type == 'tag' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          push: true
+          tags: ssogunletc/datahub-gms:v0.10.2
