@@ -45,7 +45,7 @@ jobs:
           sudo apt-get -y install tree 
           tree
           
-        - name: Build docker image 
+      - name: Build docker image 
         run: |
           cd docker/datahub-gms
           docker build -t ssogunletc/datahub-gms:v0.10.2  docker/datahub-gms/.
