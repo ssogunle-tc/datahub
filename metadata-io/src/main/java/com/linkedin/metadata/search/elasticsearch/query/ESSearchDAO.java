@@ -77,6 +77,7 @@ public class ESSearchDAO {
       // extract results, validated against document model as well
       return SearchRequestHandler.getBuilder(entitySpec, searchConfiguration).extractResult(searchResponse, filter, from, size);
     } catch (Exception e) {
+      log.info("Executing request {}: {}", id, searchRequest);
       log.error("Search query failed", e);
       throw new ESQueryException("Search query failed:", e);
     } finally {
