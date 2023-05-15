@@ -9,11 +9,38 @@ jobs:
     steps:
       - uses: actions/checkout@v3 
 
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Check Gradle version
+        run: |
+          gradle --version 
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Check Docker version
+        run: |
+          docker --version
+
+      - name: Build gms 
+        run: |
+          export JAVA_HOME=/usr/lib/jvm/temurin-11-jdk-amd64
+          ./gradlew :metadata-service:war:build 
+          echo "Copying war file..."
+          cp metadata-service/war/build/libs/war.war .
+          
+      - name: Build docker image 
+        run: |
+          java -version
+          dir -s
+          docker build  -t ssogunletc/datahub-gms:v0.10.2  docker/datahub-gms/.
+
       - name: List docker images 
         run: | 
-          echo "LS /"
-          ls /
-          echo "LS" 
-          ls 
-          echo "PWD"
-          pwd
+          docker images  
+
+      - name: Push image to Dockerhub 
+        run: |
+          docker login -u=" ${{ secrets.DOCKER_USER }}" -p=" ${{ secrets.DOCKER_PASSWORD }}"
+          docker push ssogunletc/datahub-gms:v0.10.2  
