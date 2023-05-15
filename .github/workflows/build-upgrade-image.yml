@@ -18,7 +18,8 @@ jobs:
       - name: Build Datahub Upgrade 
         run: |
           ./gradlew :datahub-upgrade:build 
-          tree datahub-upgrade
+          echo "Copying jar file..."
+          cp datahub-upgrade/build/libs/datahub-upgrade.jar .
 
       - name: Login to image repository
         uses: docker/login-action@v2
