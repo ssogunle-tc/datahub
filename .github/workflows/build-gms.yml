@@ -34,7 +34,7 @@ jobs:
         run: |
           java -version
           dir -s
-          docker build  -t ssogunletc/datahub-gms:v0.10.2  docker/datahub-gms/.
+          docker build  -t ssogunletc/datahub-gms:v0.10.2  -f docker/datahub-gms/Dockerfile
 
       - name: List docker images 
         run: | 
