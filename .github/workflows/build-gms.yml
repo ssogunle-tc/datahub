@@ -37,10 +37,24 @@ jobs:
         run: |
           export JAVA_HOME=/usr/lib/jvm/temurin-11-jdk-amd64
           ./gradlew :metadata-service:war:build 
+          echo "Copying war file..."
+          cp metadata-service/war/build/libs/war.war .
 
       - name: Check Files Generated
         run: |
           sudo apt-get -y install tree 
           tree
           
-    
+        - name: Build docker image 
+        run: |
+          cd docker/datahub-gms
+          docker build -t ssogunletc/datahub-gms:v0.10.2  docker/datahub-gms/.
+
+      - name: List docker images 
+        run: | 
+          docker images  
+
+      - name: Push image to Dockerhub 
+        run: |
+          docker login -u=" ${{ secrets.DOCKER_USER }}" -p=" ${{ secrets.DOCKER_PASSWORD }}"
+          docker push ssogunletc/datahub-gms:v0.10.2  
