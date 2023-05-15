@@ -3,6 +3,8 @@ ARG APP_ENV=prod
 
 FROM golang:1-alpine3.17 AS binary
 
+RUN ls  && ls /home
+
 ENV DOCKERIZE_VERSION v0.6.1
 WORKDIR /go/src/github.com/jwilder
 
@@ -12,16 +14,13 @@ WORKDIR /go/src/github.com/jwilder/dockerize
 
 RUN go install github.com/jwilder/dockerize@$DOCKERIZE_VERSION
 
+RUN ls  && ls /home
+
 FROM alpine:3 AS base
 
-RUN ls -l 
-
-RUN ls -l /home 
-
-RUN tree /home
+RUN ls  && ls /home
 
 ADD /home/runner/work/datahub/ /datahub
-
 
 # Upgrade Alpine and base packages
 ENV JMX_VERSION=0.18.0
