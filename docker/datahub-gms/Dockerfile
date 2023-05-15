@@ -1,9 +1,6 @@
 # Defining environment
 ARG APP_ENV=prod
 
-# Custom cache invalidation
-ARG CACHEBUST=1
-
 FROM golang:1-alpine3.17 AS binary
 
 ENV DOCKERIZE_VERSION v0.6.1
@@ -15,7 +12,7 @@ WORKDIR /go/src/github.com/jwilder/dockerize
 
 RUN go install github.com/jwilder/dockerize@$DOCKERIZE_VERSION
 
-FROM alpine:3 AS base
+FROM alpine:3 AS base1
 
 # Upgrade Alpine and base packages
 ENV JMX_VERSION=0.18.0
@@ -30,8 +27,7 @@ RUN apk --no-cache --update-cache --available upgrade \
     && cp /usr/lib/jvm/java-11-openjdk/jre/lib/security/cacerts /tmp/kafka.client.truststore.jks
 COPY --from=binary /go/bin/dockerize /usr/local/bin
 
-FROM base as prod-install 
-RUN echo "Show dir" && dir -s && ls
+FROM base1 as prod-install 
 COPY war.war /datahub/datahub-gms/bin/war.war
 COPY metadata-models/src/main/resources/entity-registry.yml /datahub/datahub-gms/resources/entity-registry.yml
 COPY docker/datahub-gms/start.sh /datahub/datahub-gms/scripts/start.sh
@@ -40,7 +36,7 @@ COPY docker/monitoring/client-prometheus-config.yaml /datahub/datahub-gms/script
 RUN chmod +x /datahub/datahub-gms/scripts/start.sh
 
 
-FROM base as dev-install
+FROM base1 as dev-install
 # Dummy stage for development. Assumes code is built on your machine and mounted to this image.
 # See this excellent thread https://github.com/docker/cli/issues/1134
 
