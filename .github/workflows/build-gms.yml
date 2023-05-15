@@ -39,6 +39,7 @@ jobs:
           ./gradlew :metadata-service:war:build 
           echo "Copying war file..."
           cp metadata-service/war/build/libs/war.war .
+          dir -s
 
       - name: Check Files Generated
         run: |
