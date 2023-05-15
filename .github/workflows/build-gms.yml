@@ -40,7 +40,7 @@ jobs:
 
       - name: Check Files Generated
         run: |
-          sudo apt-get -y tree 
+          sudo apt-get -y install tree 
           tree
           
     
