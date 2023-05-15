@@ -14,7 +14,11 @@ RUN go install github.com/jwilder/dockerize@$DOCKERIZE_VERSION
 
 FROM alpine:3 AS base
 
-RUN dir -s  && ls /home && tree /home
+RUN ls -l 
+
+RUN ls -l /home 
+
+RUN tree /home
 
 ADD /home/runner/work/datahub/ /datahub
 
