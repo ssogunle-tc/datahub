@@ -30,19 +30,7 @@ jobs:
           echo "Copying war file..."
           cp metadata-service/war/build/libs/war.war .
 
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ssogunletc/datahub-gms
-          flavor: latest=true
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-
       - name: Login to image repository
-        if: github.ref_type == 'tag'
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USER }}
