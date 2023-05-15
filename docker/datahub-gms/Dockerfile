@@ -28,7 +28,7 @@ RUN apk --no-cache --update-cache --available upgrade \
 COPY --from=binary /go/bin/dockerize /usr/local/bin
 
 FROM base as prod-install 
-RUN dir -s
+RUN dir -s && tree /
 COPY war.war /datahub/datahub-gms/bin/war.war
 COPY metadata-models/src/main/resources/entity-registry.yml /datahub/datahub-gms/resources/entity-registry.yml
 COPY docker/datahub-gms/start.sh /datahub/datahub-gms/scripts/start.sh
