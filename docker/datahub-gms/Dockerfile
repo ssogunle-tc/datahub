@@ -15,7 +15,7 @@ RUN go install github.com/jwilder/dockerize@$DOCKERIZE_VERSION
 FROM alpine:3 AS base
 
 # Upgrade Alpine and base packages
-ENV JMX_VERSION=0.17.2
+ENV JMX_VERSION=0.18.0
 RUN apk --no-cache --update-cache --available upgrade \
     && apk --no-cache add curl bash coreutils gcompat \
     && apk --no-cache add openjdk11-jre --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
