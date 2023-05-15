@@ -18,8 +18,7 @@ jobs:
       - name: Build Datahub Upgrade 
         run: |
           ./gradlew :datahub-upgrade:build 
-          echo "Copying jar file..."
-          cp metadata-service/war/build/libs/datahub-upgrade.jar .
+          tree datahub-upgrade
 
       - name: Login to image repository
         uses: docker/login-action@v2
