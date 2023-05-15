@@ -12,10 +12,10 @@ WORKDIR /go/src/github.com/jwilder/dockerize
 
 RUN go install github.com/jwilder/dockerize@$DOCKERIZE_VERSION
 
-FROM alpine:3 AS base1
+FROM alpine:3 AS base
 
 # Upgrade Alpine and base packages
-ENV JMX_VERSION=0.18.0
+ENV JMX_VERSION=0.17.2
 RUN apk --no-cache --update-cache --available upgrade \
     && apk --no-cache add curl bash coreutils gcompat \
     && apk --no-cache add openjdk11-jre --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
@@ -27,7 +27,7 @@ RUN apk --no-cache --update-cache --available upgrade \
     && cp /usr/lib/jvm/java-11-openjdk/jre/lib/security/cacerts /tmp/kafka.client.truststore.jks
 COPY --from=binary /go/bin/dockerize /usr/local/bin
 
-FROM base1 as prod-install 
+FROM base as prod-install 
 COPY war.war /datahub/datahub-gms/bin/war.war
 COPY metadata-models/src/main/resources/entity-registry.yml /datahub/datahub-gms/resources/entity-registry.yml
 COPY docker/datahub-gms/start.sh /datahub/datahub-gms/scripts/start.sh
@@ -36,7 +36,7 @@ COPY docker/monitoring/client-prometheus-config.yaml /datahub/datahub-gms/script
 RUN chmod +x /datahub/datahub-gms/scripts/start.sh
 
 
-FROM base1 as dev-install
+FROM base as dev-install
 # Dummy stage for development. Assumes code is built on your machine and mounted to this image.
 # See this excellent thread https://github.com/docker/cli/issues/1134
 

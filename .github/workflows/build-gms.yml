@@ -47,7 +47,7 @@ jobs:
           
       - name: Build docker image 
         run: |
-          docker build --build-arg --no-cache -t ssogunletc/datahub-gms:v0.10.2  docker/datahub-gms/.
+          docker build  --progress=plain -t ssogunletc/datahub-gms:v0.10.2  docker/datahub-gms/.
 
       - name: List docker images 
         run: | 
