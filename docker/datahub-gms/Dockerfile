@@ -1,6 +1,9 @@
 # Defining environment
 ARG APP_ENV=prod
 
+# Custom cache invalidation
+ARG CACHEBUST=1
+
 FROM golang:1-alpine3.17 AS binary
 
 ENV DOCKERIZE_VERSION v0.6.1
