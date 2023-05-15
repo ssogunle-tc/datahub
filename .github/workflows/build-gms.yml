@@ -15,5 +15,5 @@ jobs:
           ls /
           echo "LS" 
           ls 
-          echo "LS .."
-          ls ../
+          echo "PWD"
+          pwd
