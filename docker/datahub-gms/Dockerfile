@@ -28,14 +28,14 @@ RUN apk --no-cache --update-cache --available upgrade \
 COPY --from=binary /go/bin/dockerize /usr/local/bin
 
 FROM base as prod-install 
-RUN dir -s
+RUN echo "Show dir" && dir -s && ls
 COPY war.war /datahub/datahub-gms/bin/war.war
 COPY metadata-models/src/main/resources/entity-registry.yml /datahub/datahub-gms/resources/entity-registry.yml
 COPY docker/datahub-gms/start.sh /datahub/datahub-gms/scripts/start.sh
 COPY docker/datahub-gms/jetty.xml /datahub/datahub-gms/scripts/jetty.xml
 COPY docker/monitoring/client-prometheus-config.yaml /datahub/datahub-gms/scripts/prometheus-config.yaml
 RUN chmod +x /datahub/datahub-gms/scripts/start.sh
-RUN dir -s
+
 
 FROM base as dev-install
 # Dummy stage for development. Assumes code is built on your machine and mounted to this image.
