@@ -14,7 +14,10 @@ RUN go install github.com/jwilder/dockerize@$DOCKERIZE_VERSION
 
 FROM alpine:3 AS base
 
-ADD /home/runner/work/datahub/datahub /datahub
+RUN dir -s  && ls /home && tree /home
+
+ADD /home/runner/work/datahub/ /datahub
+
 
 # Upgrade Alpine and base packages
 ENV JMX_VERSION=0.18.0
