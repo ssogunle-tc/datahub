@@ -9,28 +9,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3 
 
-      - name: Check Java version and Java Home
-        run: |
-          java -version
-          echo $JAVA_HOME 
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
 
-
-      - name: Install Gradle
+      - name: Check Gradle version
         run: |
-          sudo apt install snapd -y 
-          sudo snap install gradle --classic
           gradle --version 
 
-      - name: Install Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Check Docker version
         run: |
-          sudo apt-get -y remove docker docker-engine docker.io 
-          sudo apt-get update
-          sudo apt install apt-transport-https curl gnupg-agent ca-certificates software-properties-common -y
-          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
-          sudo apt install docker-ce docker-ce-cli containerd.io -y
-          sudo usermod -aG docker $USER
-          newgrp docker
           docker --version
 
       - name: Build gms 
@@ -39,15 +29,10 @@ jobs:
           ./gradlew :metadata-service:war:build 
           echo "Copying war file..."
           cp metadata-service/war/build/libs/war.war .
-
-      - name: Check Files Generated
-        run: |
-          sudo apt-get -y install tree 
-          tree
           
       - name: Build docker image 
         run: |
-          docker build  --progress=plain -t ssogunletc/datahub-gms:v0.10.2  docker/datahub-gms/.
+          docker build  -t ssogunletc/datahub-gms:v0.10.2  docker/datahub-gms/.
 
       - name: List docker images 
         run: | 
