@@ -48,7 +48,7 @@ jobs:
           
       - name: Build docker image 
         run: |
-          docker build --no-cache -t ssogunletc/datahub-gms:v0.10.2  docker/datahub-gms/.
+          docker build --build-arg CACHEBUST=$(date +%s) -t ssogunletc/datahub-gms:v0.10.2  docker/datahub-gms/.
 
       - name: List docker images 
         run: | 
