@@ -3,7 +3,7 @@ import warnings
 
 # Published at https://pypi.org/project/acryl-datahub/.
 __package_name__ = "acryl-datahub-tc"
-__version__ = "0.10.2.0rc4"
+__version__ = "0.10.2.3"
 
 
 def is_dev_mode() -> bool:
