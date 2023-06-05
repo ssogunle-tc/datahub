@@ -2,8 +2,8 @@ import sys
 import warnings
 
 # Published at https://pypi.org/project/acryl-datahub/.
-__package_name__ = "acryl-datahub"
-__version__ = "0.0.0.dev0"
+__package_name__ = "acryl-datahub-tc"
+__version__ = "0.10.2.0rc4"
 
 
 def is_dev_mode() -> bool:
